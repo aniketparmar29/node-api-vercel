@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const request = require('request');
+const cookieParser = require('cookie-parser');
 
 dotenv.config({path:"./config.env"})
 
@@ -16,14 +17,11 @@ dotenv.config({path:"./config.env"})
   //   credentials: true,
   // }));
   
-
+app.use(cookieParser());
+  
 app.use(cors())
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-
-
 
 const pool = mysql.createPool({
 connectionLimit: 100,
@@ -39,7 +37,32 @@ connectionLimit: 100,
 // });
 
 
+function isAdmin(req, res, next) {
+  console.log(req.cookies);
+  // Check if 'cookies' property exists in the request object
+  if (!req.cookies || !req.cookies.token) {
+    res.sendStatus(401); // Token is missing, send a 401 Unauthorized status
+    return;
+  }
 
+  const token = req.cookies.token;
+
+  try {
+    // Verify the token with the secret key
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+    // Assuming you have a 'role' property on the decoded token
+    if (decoded.role === 'admin') {
+      req.user = decoded; // Attach the decoded user object to the request for future use
+      next(); // User is an admin, proceed to the next middleware/route handler
+    } else {
+      res.sendStatus(403); // User is not an admin, send a 403 Forbidden status
+    }
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    res.sendStatus(401); // Token verification failed, send a 401 Unauthorized status
+  }
+}
 
 
 
@@ -240,18 +263,12 @@ pool.getConnection(function(err, connection) {
     });
   });
   
-  app.get('/orders', function(req, res) {
+  app.get('/orders',isAdmin, function(req, res) {
     pool.query('SELECT * FROM orders ORDER BY trx_date DESC', function(error, results, fields) {
       if (error) throw error;
       res.send(results);
     });
   });
-
-
-
-
-
-
 
 // Generate token function
 function generateToken(userId) {
