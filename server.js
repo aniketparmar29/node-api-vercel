@@ -36,7 +36,6 @@ connectionLimit: 100,
 //   next();
 // });
 
-
 function isAdmin(req, res, next) {
   console.log(req.cookies);
   // Check if 'cookies' property exists in the request object
@@ -63,7 +62,6 @@ function isAdmin(req, res, next) {
     res.sendStatus(401); // Token verification failed, send a 401 Unauthorized status
   }
 }
-
 
 
 pool.getConnection(function(err, connection) {
