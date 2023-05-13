@@ -202,7 +202,9 @@ pool.getConnection(function(err, connection) {
   }
 });
   
-
+app.get('/protected', isAdmin, (req, res) => {
+  res.json({ message: 'This is a protected route for admins only.' });
+});
   
   app.post('/check_order', (req, res) => {
     const data = {
