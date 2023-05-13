@@ -12,10 +12,11 @@ const cookieParser = require('cookie-parser');
 
 dotenv.config({path:"./config.env"})
 
-// app.use(cors({
-  //   origin: ['http://localhost:3000',''],
-  //   credentials: true,
-  // }));
+
+app.use(cors({
+  origin: ['https://hathibrand.in/'],
+  credentials: true,
+}));
   
 app.use(cookieParser());
   
