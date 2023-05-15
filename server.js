@@ -13,14 +13,10 @@ const cookieParser = require('cookie-parser');
 dotenv.config({path:"./config.env"})
 
 
-app.use(cors({
-  origin: ['https://hathibrand.in/'],
-  credentials: true,
-}));
+app.use(cors());
   
 app.use(cookieParser());
   
-app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -32,10 +28,7 @@ connectionLimit: 100,
   database: process.env.DATABASE,
 });
 
-// app.use((req, res, next) => {
-//   res.setHeader('Access-Control-Allow-Origin', 'https://hathibrand.in');
-//   next();
-// });
+
 
 function isAdmin(req, res, next) {
   console.log(req.cookies);
